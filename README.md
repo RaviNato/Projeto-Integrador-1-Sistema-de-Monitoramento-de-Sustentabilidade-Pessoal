@@ -1,0 +1,2 @@
+# Projeto-Integrador-1-Sistema-de-Monitoramento-de-Sustentabilidade-Pessoal
+O Sistema de Monitoramento de Sustentabilidade Pessoal tem grande importância, especialmente em um contexto global onde questões ambientais, como mudanças climáticas e escassez de recursos naturais, estão se tornando cada vez mais urgentes. Ele oferece uma série de benefícios para os indivíduos, comunidades e o meio ambiente.
