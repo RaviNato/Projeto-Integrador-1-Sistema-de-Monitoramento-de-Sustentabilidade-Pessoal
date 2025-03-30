@@ -9,8 +9,8 @@ while not digitoBem:
     try:
         litros = float(input("Quantos litros de água você consumiu hoje (Aprox. em litros)? "))
         kwh = float(input("Quantos kWh de energia elétrica você consumiu hoje? "))
-        kg = float(input("Quantos kg de resíduos não recicláveis você gerou hoje? "))
-        porcentagem = float((input("Qual a porcentagem de resíduos reciclados no total? ")).replace("%", "").strip())
+        kg = float(input("Quantos kg de resíduos NÃO recicláveis você gerou hoje? "))
+        porcentagem = float((input("Qual a porcentagem de resíduos RECICLADOS no total? ")).replace("%", "").strip())
         print(
         " [1] Transporte público (ônibus, metrô, trem)\n",\
         "[2] Bicicleta\n",\
