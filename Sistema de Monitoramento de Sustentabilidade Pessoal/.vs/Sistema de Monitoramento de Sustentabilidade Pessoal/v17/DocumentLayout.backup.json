@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\caio9\\Downloads\\SMSP\\Projeto-Integrador-1-Sistema-de-Monitoramento-de-Sustentabilidade-Pessoal\\Sistema de Monitoramento de Sustentabilidade Pessoal\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9AFF65DF-1AF7-4901-9371-B157373C32F4}|Sistema de Monitoramento de Sustentabilidade Pessoal.pyproj|C:\\Users\\caio9\\Downloads\\SMSP\\Projeto-Integrador-1-Sistema-de-Monitoramento-de-Sustentabilidade-Pessoal\\Sistema de Monitoramento de Sustentabilidade Pessoal\\Sistema_de_Monitoramento_de_Sustentabilidade_Pessoal.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{9AFF65DF-1AF7-4901-9371-B157373C32F4}|Sistema de Monitoramento de Sustentabilidade Pessoal.pyproj|solutionrelative:Sistema_de_Monitoramento_de_Sustentabilidade_Pessoal.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Sistema_de_Monitoramento_de_Sustentabilidade_Pessoal.py",
+              "DocumentMoniker": "C:\\Users\\caio9\\Downloads\\SMSP\\Projeto-Integrador-1-Sistema-de-Monitoramento-de-Sustentabilidade-Pessoal\\Sistema de Monitoramento de Sustentabilidade Pessoal\\Sistema_de_Monitoramento_de_Sustentabilidade_Pessoal.py",
+              "RelativeDocumentMoniker": "Sistema_de_Monitoramento_de_Sustentabilidade_Pessoal.py",
+              "ToolTip": "C:\\Users\\caio9\\Downloads\\SMSP\\Projeto-Integrador-1-Sistema-de-Monitoramento-de-Sustentabilidade-Pessoal\\Sistema de Monitoramento de Sustentabilidade Pessoal\\Sistema_de_Monitoramento_de_Sustentabilidade_Pessoal.py",
+              "RelativeToolTip": "Sistema_de_Monitoramento_de_Sustentabilidade_Pessoal.py",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA0AAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2025-03-29T21:35:09.574Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
