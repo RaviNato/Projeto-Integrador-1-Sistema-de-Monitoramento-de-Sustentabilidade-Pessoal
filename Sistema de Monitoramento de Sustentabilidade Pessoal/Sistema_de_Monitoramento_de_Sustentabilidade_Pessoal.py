@@ -1,6 +1,5 @@
 ﻿# Fazendo a conexao com o MySQL
 from mysql.connector import connect, Error
-
 '''
  Criar tabela no banco dados
 
@@ -29,11 +28,6 @@ def obterConxao ():
             )
     return obterConxao.conexao
 obterConxao.conexao=None
-
-
-
-
-
 
 # Codigo para inserir uma novo registro no banco de dados
 def entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco):
@@ -124,6 +118,208 @@ def fechaConexa():
     cursor.close()
     conexao.close()
 
+# Registro
+def inserir():
+    datavalida = True
+    while datavalida:
+        try: # Tentando obter um número inteiro
+            dia = int(input(f"Olá, {nome}, digite o dia do monitoramento: "))
+        except ValueError:
+            print("O dia deverá ser um valor inteiro!")
+        else:
+            if dia < 1 or dia > 31:
+                print("Não há esse dia!")
+            else:
+                try: # Tentando obter um número inteiro
+                    mes = int(input("Agora o digite o mes: "))
+                except ValueError:
+                    print("O mês deverá ser um valor inteiro! Tente novamente.")
+                else:
+                    if mes < 1 or mes > 12: # Mês invalido
+                        print("Não há esse mês! Tente novamente.")
+                    elif dia > 30 and (mes == 4 or mes == 6 or mes == 9 or mes == 11): # Dia maior que 30 em meses de 30 dias
+                        print("Valor de dia e de mês incompatíveis um com o outro! Tente novamente.")
+                    elif dia > 29 and mes == 2:
+                        print("Valor de dia e de mês incompatíveis um com o outro! Tente novamente.")
+                    else:
+                        try: # Tentando obter um número inteiro
+                            ano = int(input("E por fim, digite o ano: "))
+                        except ValueError:
+                            print("O ano deve ser um valor inteiro! Tente novamente.")
+                        else:
+                            if ano < 1950:
+                                print("Este programa não valida datas com anos anteriores a 1950! Tente novamente.")
+                            elif ano > 2025:
+                                print("Este programa não valida datas com anos superiores a 2025! Tente novamente.")
+                            elif ano%400 == 0 or (ano%4 == 0 and ano%100 != 0): # Ano bissexto
+                                print("Data válida!")
+                                datavalida = False
+                            elif dia > 28 and mes == 2: # Fevereio não pode ser mais de 28
+                                print("Valor de dia, mês e ano incompatíveis um com o outro! Tente novamente.")
+                            else:
+                                print("Data válida!")
+                                datavalida = False
+
+    digitoBem = True
+    litrosBem = True
+    kwhBem = True
+    kgBem = True
+    porcentagemBem = True
+    transporteBem = True
+
+
+    print()
+    while digitoBem:
+        while litrosBem:
+            try: # tentando obter um número inteiro em todas as entradas
+                litros = float(input("Quantos litros de água você consumiu hoje? (Aprox. em litros): "))
+            except ValueError:
+                print(f"{nome}, os valores deverão ser um número! Tente novamente.")
+            else:
+                if litros < 0:
+                    print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
+                else:
+                    litrosBem = False
+
+        while kwhBem:
+            try:
+                kwh = float(input("Quantos kWh de energia elétrica você consumiu hoje?: "))
+            except ValueError:
+                print(f"{nome}, os valor deverá ser um número! Tente novamente.")
+            else:
+                if kwh < 0:
+                    print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
+                else:
+                    kwhBem = False
+
+        while kgBem:
+            try:
+                kg = float(input("Quantos kg de resíduos não recicláveis você gerou hoje?: "))
+            except ValueError:
+                print(f"{nome}, os valor deverá ser um número! Tente novamente.")
+            else:
+                if kg < 0:
+                    print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
+                else:
+                    kgBem = False
+
+        while porcentagemBem:
+            try:
+                porcentagem = float((input("Qual a porcentagem de resíduos reciclados no total (em %)?: ")).replace("%", "").strip())
+            except ValueError:
+                print(f"{nome}, os valor deverá ser um número! Tente novamente.")
+            else:
+                if porcentagem < 0:
+                    print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
+                elif porcentagem < 0:
+                    print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
+                elif porcentagem > 100:
+                    print(f"{nome}, a porcentagem de resíduos reciclados não deve ultrapassar 100%! Tente novamente.")
+                else:
+                    porcentagemBem = False
+
+        while transporteBem:
+            try:
+                print(
+                    "Qual o meio de transporte você usou hoje? \n",\
+                    "[1] Transporte público (ônibus, metrô, trem)\n",\
+                    "[2] Bicicleta\n",\
+                    "[3] Caminhada\n",\
+                    "[4] Carro (combustível fósseis)\n",\
+                    "[5] Carro elétrico\n",\
+                    "[6] Carona compartilhada")
+                transporte = int(input(""))
+            except ValueError:
+                print(f"{nome}, o valor deverá ser um número! Tente novamente.")
+            else:
+                if transporte > 6 or transporte < 1:
+                    print(f"{nome}, não há correspondência para esse transporte! Tente novamente.")
+                else:
+                    transporteBem = False
+                    digitoBem = False
+
+
+
+
+
+    # Processamento
+
+    AltaSustentabilidade = "Alta Sustentabilidade"
+    ModeradaSustentabilidade = "Moderada Sustentabilidade"
+    BaixaSustentabilidade = "Baixa Sustentabilidade"
+
+    consumAgua = None
+    if litros < 150:
+        consumAgua = AltaSustentabilidade
+    elif litros > 151 and litros < 201:
+        consumAgua = ModeradaSustentabilidade
+    else:
+        consumAgua = BaixaSustentabilidade
+
+    consumEnergia = None
+    if kwh < 5:
+        consumEnergia = AltaSustentabilidade
+    elif kwh > 4 and kwh < 11:
+        consumEnergia = ModeradaSustentabilidade
+    else:
+        consumEnergia = BaixaSustentabilidade
+
+    consumLixo = None
+    if porcentagem > 50:
+        consumLixo = AltaSustentabilidade
+    elif porcentagem > 19 and porcentagem < 51:
+        consumLixo = ModeradaSustentabilidade
+    else:
+        consumLixo = BaixaSustentabilidade
+
+    consumTransporte = None
+    if transporte in [1, 2, 3, 5]:
+        consumTransporte = AltaSustentabilidade
+    elif transporte == 4:
+        consumTransporte = BaixaSustentabilidade
+    else:
+        consumTransporte = ModeradaSustentabilidade
+
+
+
+
+
+    # Classificação
+
+    print(
+        "\n",\
+        f"##############        {nome}, aqui está o resultado de suas classificações!         #############\n",\
+        "\n",\
+        f"  Consumo de água:                        {consumAgua}\n",\
+        f"  Geração de Resíduos Não Recicláveis:    {consumLixo}\n",\
+        f"  Consumo de Energia Elétrica:            {consumEnergia}\n",\
+        f"  Uso de Transporte:                      {consumTransporte}\n",\
+        "")
+
+
+
+    # entrada das informaçoes no banco de dados
+
+    transporte_banco = None
+    if transporte == 1:
+        transporte_banco = "Transporte público (ônibus, metrô, trem)"
+    elif transporte == 2:
+        transporte_banco = "Bicicleta"
+    elif transporte == 3:
+        transporte_banco = "Caminhada"
+    elif transporte == 4:
+        transporte_banco = "Carro (combustível fósseis)"
+    elif transporte == 5:
+        transporte_banco = "Carro elétrico"
+    else:
+        transporte_banco = "Carona compartilhada"
+
+    try:
+        entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco)# Chama o sub programa para inserir as imformções
+    except Error:
+        print("Erro nos dados digitados!")
+    else:
+        print("Dados cadastrados com sucesso\n")
 
 
 
@@ -131,7 +327,6 @@ def fechaConexa():
 
 print("################        PROGRAMA DE MONITORAMENTO DE SUSTENTABILIDADE PESSOAL     #######################")
 
-# Entradas
 nomeBom = True
 while nomeBom:
     nome = input("Qual seu nome? ")
@@ -146,210 +341,7 @@ while nomeBom:
 print()
 
 
-
-datavalida = True
-while datavalida:
-    try: # Tentando obter um número inteiro
-        dia = int(input(f"Olá, {nome}, digite o dia do monitoramento: "))
-    except ValueError:
-        print("O dia deverá ser um valor inteiro!")
-    else:
-        if dia < 1 or dia > 31:
-            print("Não há esse dia!")
-        else:
-            try: # Tentando obter um número inteiro
-                mes = int(input("Agora o digite o mes: "))
-            except ValueError:
-                print("O mês deverá ser um valor inteiro! Tente novamente.")
-            else:
-                if mes < 1 or mes > 12: # Mês invalido
-                    print("Não há esse mês! Tente novamente.")
-                elif dia > 30 and (mes == 4 or mes == 6 or mes == 9 or mes == 11): # Dia maior que 30 em meses de 30 dias
-                    print("Valor de dia e de mês incompatíveis um com o outro! Tente novamente.")
-                elif dia > 29 and mes == 2:
-                    print("Valor de dia e de mês incompatíveis um com o outro! Tente novamente.")
-                else:
-                    try: # Tentando obter um número inteiro
-                        ano = int(input("E por fim, digite o ano: "))
-                    except ValueError:
-                        print("O ano deve ser um valor inteiro! Tente novamente.")
-                    else:
-                        if ano < 1950:
-                            print("Este programa não valida datas com anos anteriores a 1950! Tente novamente.")
-                        elif ano > 2025:
-                            print("Este programa não valida datas com anos superiores a 2025! Tente novamente.")
-                        elif ano%400 == 0 or (ano%4 == 0 and ano%100 != 0): # Ano bissexto
-                            print("Data válida!")
-                            datavalida = False
-                        elif dia > 28 and mes == 2: # Fevereio não pode ser mais de 28
-                            print("Valor de dia, mês e ano incompatíveis um com o outro! Tente novamente.")
-                        else:
-                            print("Data válida!")
-                            datavalida = False
-
-print()
-
-digitoBem = True
-litrosBem = True
-kwhBem = True
-kgBem = True
-porcentagemBem = True
-transporteBem = True
-
-while digitoBem:
-    while litrosBem:
-        try: # tentando obter um número inteiro em todas as entradas
-            litros = float(input("Quantos litros de água você consumiu hoje? (Aprox. em litros): "))
-        except ValueError:
-            print(f"{nome}, os valores deverão ser um número! Tente novamente.")
-        else:
-            if litros < 0:
-                print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
-            else:
-                litrosBem = False
-
-    while kwhBem:
-        try:
-            kwh = float(input("Quantos kWh de energia elétrica você consumiu hoje?: "))
-        except ValueError:
-            print(f"{nome}, os valor deverá ser um número! Tente novamente.")
-        else:
-            if kwh < 0:
-                print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
-            else:
-                kwhBem = False
-
-    while kgBem:
-        try:
-            kg = float(input("Quantos kg de resíduos não recicláveis você gerou hoje?: "))
-        except ValueError:
-            print(f"{nome}, os valor deverá ser um número! Tente novamente.")
-        else:
-            if kg < 0:
-                print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
-            else:
-                kgBem = False
-
-    while porcentagemBem:
-        try:
-            porcentagem = float((input("Qual a porcentagem de resíduos reciclados no total (em %)?: ")).replace("%", "").strip())
-        except ValueError:
-            print(f"{nome}, os valor deverá ser um número! Tente novamente.")
-        else:
-            if porcentagem < 0:
-                print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
-            elif porcentagem < 0:
-                print(f"{nome}, o valor deverá ser um valor positivo! Tente novamente.")
-            elif porcentagem > 100:
-                print(f"{nome}, a porcentagem de resíduos reciclados não deve ultrapassar 100%! Tente novamente.")
-            else:
-                porcentagemBem = False
-
-    while transporteBem:
-        try:
-            print(
-            " [1] Transporte público (ônibus, metrô, trem)\n",\
-            "[2] Bicicleta\n",\
-            "[3] Caminhada\n",\
-            "[4] Carro (combustível fósseis)\n",\
-            "[5] Carro elétrico\n",\
-            "[6] Carona compartilhada")
-            transporte = int(input("Qual o meio de transporte você usou hoje?: "))
-        except ValueError:
-            print(f"{nome}, o valor deverá ser um número! Tente novamente.")
-        else:
-            if transporte > 6 or transporte < 1:
-                print(f"{nome}, não há correspondência para esse transporte! Tente novamente.")
-            else:
-                transporteBem = False
-                digitoBem = False
-
-
-
-# Processamento
-
-AltaSustentabilidade = "Alta Sustentabilidade"
-ModeradaSustentabilidade = "Moderada Sustentabilidade"
-BaixaSustentabilidade = "Baixa Sustentabilidade"
-
-consumAgua = None
-if litros < 150:
-    consumAgua = AltaSustentabilidade
-elif litros > 151 and litros < 201:
-    consumAgua = ModeradaSustentabilidade
-else:
-    consumAgua = BaixaSustentabilidade
-
-consumEnergia = None
-if kwh < 5:
-    consumEnergia = AltaSustentabilidade
-elif kwh > 4 and kwh < 11:
-    consumEnergia = ModeradaSustentabilidade
-else:
-    consumEnergia = BaixaSustentabilidade
-
-consumLixo = None
-if porcentagem > 50:
-    consumLixo = AltaSustentabilidade
-elif porcentagem > 19 and porcentagem < 51:
-    consumLixo = ModeradaSustentabilidade
-else:
-    consumLixo = BaixaSustentabilidade
-
-consumTransporte = None
-if transporte in [1, 2, 3, 5]:
-    consumTransporte = AltaSustentabilidade
-elif transporte == 4:
-    consumTransporte = BaixaSustentabilidade
-else:
-    consumTransporte = ModeradaSustentabilidade
-
-
-
-
-
-# Classificação
-
-print(
-    "\n",\
-    f"#########      Chegamos ao fim, {nome}. Aqui está o resultado de suas classificações!       #########\n",\
-    "\n",\
-    f"  Consumo de água:                        {consumAgua}\n",\
-    f"  Geração de Resíduos Não Recicláveis:    {consumLixo}\n",\
-    f"  Consumo de Energia Elétrica:            {consumEnergia}\n",\
-    f"  Uso de Transporte:                      {consumTransporte}\n",\
-    "")
-
-
-
-# entrada das informaçoes no banco de dados
-
-transporte_banco = None
-if transporte == 1:
-    transporte_banco = "Transporte público (ônibus, metrô, trem)"
-elif transporte == 2:
-    transporte_banco = "Bicicleta"
-elif transporte == 3:
-    transporte_banco = "Caminhada"
-elif transporte == 4:
-    transporte_banco = "Carro (combustível fósseis)"
-elif transporte == 5:
-    transporte_banco = "Carro elétrico"
-else:
-    transporte_banco = "Carona compartilhada"
-
-try:
-    entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco)# # Chama o sub programa para inserir as imformções
-except Error:
-    print("Erro nos dados digitados!")
-else:
-    print("Dados cadastrados com sucesso\n")
-
-
-
-
 # Menu para acessar o banco de dados
-
 bancodado = True
 while bancodado:
     menubd = True
@@ -357,23 +349,32 @@ while bancodado:
         try:
             print(
                 "O que você deseja fazer?\n",\
-                "[1]Ver todos os registros.\n",\
-                "[2]Alterar registro.\n",\
-                "[3]Deletar registro.\n",\
-                "[4]Encerrar programa.")
+                "[1]Inserir registro.\n",\
+                "[2]Ver todos os registros.\n",\
+                "[3]Alterar registro.\n",\
+                "[4]Deletar registro.\n",\
+                "[5]Encerrar programa.")
             menu_resposta=int(input(""))
         except ValueError:
             print(f"{nome}, o valor deverá ser um número! Tente novamente.")
         else:
-            if menu_resposta > 4 or menu_resposta < 1:
+            if menu_resposta > 5 or menu_resposta < 1:
                 print(f"{nome}, não há correspondência para essa opção! Tente novamente.")
             else:
                 menubd = False
 
+
     if menu_resposta == 1:
-        listar()# Chama o sub programa para fazer lista das informações
-        
+        inserir()# Chama o sub programa para fazer inserir um registro
+
+
+    
     if menu_resposta == 2:
+        listar()# Chama o sub programa para fazer lista das informações
+
+
+
+    if menu_resposta == 3:
         # Menu para escolher o que deseja mudar no banco de dados
         cod_alt = int(input("Digite o codigo do registro que você desaja Alterar: "))
         try:
@@ -399,10 +400,11 @@ while bancodado:
                                 "[6]RESÍDUOS RECICLADOS(%).\n",\
                                 "[7]TRANSPORTE.\n")
                             menu_resposta_alt=int(input(""))
+                            print()
                         except ValueError:
                             print(f"{nome}, o valor deverá ser um número! Tente novamente.")
                         else:
-                            if menu_resposta_alt > 7 or menu_resposta < 1:
+                            if menu_resposta_alt > 7 or menu_resposta_alt < 1:
                                 print(f"{nome}, não há correspondência para essa opção! Tente novamente.")
                             else:
                                 
@@ -428,27 +430,27 @@ while bancodado:
                     elif menu_resposta_alt == 2:
                         datavalida = True
                         while datavalida:
-                            try: 
-                                dia = int(input(f"Digite o novo dia: "))
+                            try: # Tentando obter um número inteiro
+                                dia = int(input(f"Olá, {nome}, digite o dia do monitoramento: "))
                             except ValueError:
                                 print("O dia deverá ser um valor inteiro!")
                             else:
                                 if dia < 1 or dia > 31:
                                     print("Não há esse dia!")
                                 else:
-                                    try:
+                                    try: # Tentando obter um número inteiro
                                         mes = int(input("Agora o digite o mes: "))
                                     except ValueError:
                                         print("O mês deverá ser um valor inteiro! Tente novamente.")
                                     else:
-                                        if mes < 1 or mes > 12:
+                                        if mes < 1 or mes > 12: # Mês invalido
                                             print("Não há esse mês! Tente novamente.")
-                                        elif dia > 30 and (mes == 4 or mes == 6 or mes == 9 or mes == 11):
+                                        elif dia > 30 and (mes == 4 or mes == 6 or mes == 9 or mes == 11): # Dia maior que 30 em meses de 30 dias
                                             print("Valor de dia e de mês incompatíveis um com o outro! Tente novamente.")
                                         elif dia > 29 and mes == 2:
                                             print("Valor de dia e de mês incompatíveis um com o outro! Tente novamente.")
                                         else:
-                                            try:
+                                            try: # Tentando obter um número inteiro
                                                 ano = int(input("E por fim, digite o ano: "))
                                             except ValueError:
                                                 print("O ano deve ser um valor inteiro! Tente novamente.")
@@ -457,14 +459,13 @@ while bancodado:
                                                     print("Este programa não valida datas com anos anteriores a 1950! Tente novamente.")
                                                 elif ano > 2025:
                                                     print("Este programa não valida datas com anos superiores a 2025! Tente novamente.")
-                                                elif ano%400 == 0 or (ano%4 == 0 and ano%100 != 0):
+                                                elif ano%400 == 0 or (ano%4 == 0 and ano%100 != 0): # Ano bissexto
                                                     print("Data válida!")
                                                     datavalida = False
-                                                elif dia > 28 and mes == 2:
+                                                elif dia > 28 and mes == 2: # Fevereio não pode ser mais de 28
                                                     print("Valor de dia, mês e ano incompatíveis um com o outro! Tente novamente.")
                                                 else:
                                                     print("Data válida!")
-                                                    print()
                                                     datavalida = False
 
                         alterarBD("data_checagem", cod_alt, dia, mes, ano)# Chama o sub programa para alterar a informação do banco de dados
@@ -518,13 +519,14 @@ while bancodado:
                         while transporteAlt:
                             try:
                                 print(
-                                " [1] Transporte público (ônibus, metrô, trem)\n",\
-                                "[2] Bicicleta\n",\
-                                "[3] Caminhada\n",\
-                                "[4] Carro (combustível fósseis)\n",\
-                                "[5] Carro elétrico\n",\
-                                "[6] Carona compartilhada")
-                                transporte = int(input("Qual o meio de transporte você usou hoje?: "))
+                                    "Qual o meio de transporte você usou hoje? \n",\
+                                    "[1] Transporte público (ônibus, metrô, trem)\n",\
+                                    "[2] Bicicleta\n",\
+                                    "[3] Caminhada\n",\
+                                    "[4] Carro (combustível fósseis)\n",\
+                                    "[5] Carro elétrico\n",\
+                                    "[6] Carona compartilhada")
+                                transporte = int(input(""))
                             except ValueError:
                                 print("O valor deverá ser um número! Tente novamente.")
                             else:
@@ -552,18 +554,15 @@ while bancodado:
 
         
 
-    if menu_resposta == 3:
+    if menu_resposta == 4:
         cod_del = int(input("Digite o codigo do registro que você desaja deletar: "))
-        deletar(cod_del)# # Chama o sub programa deletar informações
-        
+        deletar(cod_del)# Chama o sub programa deletar informações
         
 
-    if menu_resposta == 4:
+
+    if menu_resposta == 5:
         fechaConexa()# Chama o sub programa para fechar a conexão
         bancodado = False
         
-    
-
-
 
 print("################                         PROGRAMA ENCERRADO                      #######################")
