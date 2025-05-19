@@ -1,4 +1,5 @@
 ﻿# Fazendo a conexao com o MySQL
+import pprint
 from mysql.connector import connect, Error
 '''
  Criar tabela no banco dados
@@ -12,6 +13,10 @@ CREATE TABLE BD240225234.projeto(
     residuos_nao_resiclaveis_Kg decimal(10,2) not null,
     residuos_reciclados decimal(10,2) not null,
     transporte varchar(50) not null,
+    classificacao_agua varchar(25) not null,
+    classificacao_lixo varchar(25) not null,
+    classificacao_energia varchar(25) not null,
+    classificacao_transporte varchar(25) not null,
     PRIMARY KEY (codigo)
 ) DEFAULT CHARSET = utf8mb4;
 '''
@@ -30,11 +35,11 @@ def obterConxao ():
 obterConxao.conexao=None
 
 # Codigo para inserir uma novo registro no banco de dados
-def entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco):
+def entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco, consumAgua, consumLixo, consumEnergia, consumTransporte):
     comando = ("INSERT INTO BD240225234.projeto"
-           "(nome, data_checagem, agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte)"
+           "(nome, data_checagem, agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte, classificacao_agua, classificacao_lixo, classificacao_energia, classificacao_transporte)"
            "VALUES"
-           f"('{nome}', '{ano}.{mes}.{dia}', '{litros}', '{kwh}', '{kg}', '{porcentagem}', '{transporte_banco}') ")
+           f"('{nome}', '{ano}.{mes}.{dia}', '{litros}', '{kwh}', '{kg}', '{porcentagem}', '{transporte_banco}', '{consumAgua}', '{consumLixo}', '{consumEnergia}', '{consumTransporte}') ")
     
     conexao=obterConxao()
     cursor=conexao.cursor()
@@ -43,7 +48,7 @@ def entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco
 
 # Codigo para chamar entradas da lista de checagem
 def listaDeDados():
-    comando = f"SELECT codigo, nome, DATE_FORMAT(data_checagem,'%d/%m/%Y'), agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte FROM BD240225234.projeto;"
+    comando = f"SELECT codigo, nome, DATE_FORMAT(data_checagem,'%d/%m/%Y'), agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte, classificacao_agua, classificacao_lixo, classificacao_energia, classificacao_transporte FROM BD240225234.projeto;"
     conexao=obterConxao()
     cursor=conexao.cursor()
     cursor.execute(comando)
@@ -70,6 +75,10 @@ def listar():
             print("RESÍDUOS NÃO RECICLÁVEIS(Kg): ", linha[atual][5])
             print("RESÍDUOS RECICLADOS(%)......: ", linha[atual][6])
             print("TRANSPORTE..................: ", linha[atual][7])
+            print("CONSUMO DE ÁGUA.............: ", linha[atual][8])
+            print("GERAÇÃO LIXO NÃO RECICLÁVEL.: ", linha[atual][9])
+            print("CONSUOM DE ENERGIA ELÉTRICA.: ", linha[atual][10])
+            print("USO DE TRANSPORTES..........: ", linha[atual][11])
             atual+=1
 
         print()
@@ -123,6 +132,7 @@ def inserir():
     datavalida = True
     while datavalida:
         try: # Tentando obter um número inteiro
+            print()
             dia = int(input(f"Olá, {nome}, digite o dia do monitoramento: "))
         except ValueError:
             print("O dia deverá ser um valor inteiro!")
@@ -172,7 +182,7 @@ def inserir():
     while digitoBem:
         while litrosBem:
             try: # tentando obter um número inteiro em todas as entradas
-                litros = float(input("Quantos litros de água você consumiu hoje? (Aprox. em litros): "))
+                litros = float((input("Quantos litros de água você consumiu hoje? (Aprox. em litros): ")).replace(",", "."))
             except ValueError:
                 print(f"{nome}, os valores deverão ser um número! Tente novamente.")
             else:
@@ -183,7 +193,7 @@ def inserir():
 
         while kwhBem:
             try:
-                kwh = float(input("Quantos kWh de energia elétrica você consumiu hoje?: "))
+                kwh = float((input("Quantos kWh de energia elétrica você consumiu hoje?: ")).replace(",", "."))
             except ValueError:
                 print(f"{nome}, os valor deverá ser um número! Tente novamente.")
             else:
@@ -194,7 +204,7 @@ def inserir():
 
         while kgBem:
             try:
-                kg = float(input("Quantos kg de resíduos não recicláveis você gerou hoje?: "))
+                kg = float((input("Quantos kg de resíduos não recicláveis você gerou hoje?: ")).replace(",", "."))
             except ValueError:
                 print(f"{nome}, os valor deverá ser um número! Tente novamente.")
             else:
@@ -205,7 +215,7 @@ def inserir():
 
         while porcentagemBem:
             try:
-                porcentagem = float((input("Qual a porcentagem de resíduos reciclados no total (em %)?: ")).replace("%", "").strip())
+                porcentagem = float((((input("Qual a porcentagem de resíduos reciclados no total (em %)?: ")).replace("%", "")).replace(",", ".")).strip())
             except ValueError:
                 print(f"{nome}, os valor deverá ser um número! Tente novamente.")
             else:
@@ -221,7 +231,7 @@ def inserir():
         while transporteBem:
             try:
                 print(
-                    "Qual o meio de transporte você usou hoje? \n",\
+                    "Qual o meio de transporte você usou hoje?: \n",\
                     "[1] Transporte público (ônibus, metrô, trem)\n",\
                     "[2] Bicicleta\n",\
                     "[3] Caminhada\n",\
@@ -315,7 +325,7 @@ def inserir():
         transporte_banco = "Carona compartilhada"
 
     try:
-        entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco)# Chama o sub programa para inserir as imformções
+        entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco, consumAgua, consumLixo, consumEnergia, consumTransporte)# Chama o sub programa para inserir as imformções
     except Error:
         print("Erro nos dados digitados!")
     else:
@@ -338,7 +348,6 @@ while nomeBom:
         print("O nome não poderá conter caracteres especiais! Tente novamente.")
     else:
         nomeBom = False
-print()
 
 
 # Menu para acessar o banco de dados
@@ -347,6 +356,7 @@ while bancodado:
     menubd = True
     while menubd:
         try:
+            print()
             print(
                 "O que você deseja fazer?\n",\
                 "[1]Inserir registro.\n",\
@@ -376,10 +386,11 @@ while bancodado:
 
     if menu_resposta == 3:
         # Menu para escolher o que deseja mudar no banco de dados
+        print()
         cod_alt = int(input("Digite o codigo do registro que você desaja Alterar: "))
         try:
             codigoN=checagemNao(cod_alt) #Chamndo o sub programa para ver se codigo esta cadestrado
-        except Error:
+        except ValueError:
             print("Problema de conexão com o BD!")
         else:
             if codigoN:
@@ -390,6 +401,7 @@ while bancodado:
                     menu_alt = True
                     while menu_alt:
                         try:
+                            print()
                             print(
                                 "O que você deseja alterar?\n",\
                                 "[1]NOME.\n",\
@@ -398,9 +410,8 @@ while bancodado:
                                 "[4]ENERGIA(KWh).\n",\
                                 "[5]RESÍDUOS NÃO RECICLÁVEIS(Kg).\n",\
                                 "[6]RESÍDUOS RECICLADOS(%).\n",\
-                                "[7]TRANSPORTE.\n")
+                                "[7]TRANSPORTE.")
                             menu_resposta_alt=int(input(""))
-                            print()
                         except ValueError:
                             print(f"{nome}, o valor deverá ser um número! Tente novamente.")
                         else:
@@ -412,6 +423,7 @@ while bancodado:
 
             
                     if menu_resposta_alt == 1:
+                        print()
                         nomeBomAlt = True
                         while nomeBomAlt:
                             nomeAlt = input("Digite o novo nome? ")
@@ -481,6 +493,7 @@ while bancodado:
                         alt_aer = True
                         while alt_aer:
                             try:
+                                print()
                                 valor = float(input("Digite o novo valor: "))
                             except ValueError:
                                 print(f"{nome}, os valores deverão ser um número! Tente novamente.")
@@ -498,6 +511,7 @@ while bancodado:
                         alt_por = True
                         while alt_por:
                             try:
+                                print()
                                 porcentagem = float((input("Digite a nova porcentagem?: ")).replace("%", "").strip())
                             except ValueError:
                                 print("Os valor deverá ser um número! Tente novamente.")
@@ -518,8 +532,9 @@ while bancodado:
                         transporteAlt = True
                         while transporteAlt:
                             try:
+                                print()
                                 print(
-                                    "Qual o meio de transporte você usou hoje? \n",\
+                                    "Qual o meio de transporte você usou hoje?: \n",\
                                     "[1] Transporte público (ônibus, metrô, trem)\n",\
                                     "[2] Bicicleta\n",\
                                     "[3] Caminhada\n",\
@@ -527,6 +542,7 @@ while bancodado:
                                     "[5] Carro elétrico\n",\
                                     "[6] Carona compartilhada")
                                 transporte = int(input(""))
+                                print()
                             except ValueError:
                                 print("O valor deverá ser um número! Tente novamente.")
                             else:
@@ -555,8 +571,10 @@ while bancodado:
         
 
     if menu_resposta == 4:
+        print()
         cod_del = int(input("Digite o codigo do registro que você desaja deletar: "))
         deletar(cod_del)# Chama o sub programa deletar informações
+        print()
         
 
 
@@ -564,5 +582,5 @@ while bancodado:
         fechaConexa()# Chama o sub programa para fechar a conexão
         bancodado = False
         
-
-print("################                         PROGRAMA ENCERRADO                      #######################")
+print()
+print("######################                         PROGRAMA ENCERRADO                      #######################")
