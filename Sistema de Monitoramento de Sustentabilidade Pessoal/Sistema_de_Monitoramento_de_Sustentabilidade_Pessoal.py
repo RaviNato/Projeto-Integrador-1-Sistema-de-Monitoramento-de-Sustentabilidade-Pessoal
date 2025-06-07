@@ -1,7 +1,4 @@
-﻿# Fazendo a conexao com o MySQL
-import pprint
-from mysql.connector import connect, Error
-'''
+﻿'''
  Criar tabela no banco dados
 
 CREATE TABLE BD240225234.projeto(
@@ -14,13 +11,24 @@ CREATE TABLE BD240225234.projeto(
     residuos_reciclados decimal(10,2) not null,
     transporte varchar(50) not null,
     classificacao_agua varchar(25) not null,
-    classificacao_lixo varchar(25) not null,
     classificacao_energia varchar(25) not null,
+    classificacao_lixo varchar(25) not null,
     classificacao_transporte varchar(25) not null,
     PRIMARY KEY (codigo)
 ) DEFAULT CHARSET = utf8mb4;
 '''
 
+
+
+
+
+
+
+
+
+# Fazendo a conexao com o MySQL
+import pprint
+from mysql.connector import connect, Error
 
 # Conectando com o baco de dados
 def obterConxao ():
@@ -35,11 +43,11 @@ def obterConxao ():
 obterConxao.conexao=None
 
 # Codigo para inserir uma novo registro no banco de dados
-def entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco, consumAgua, consumLixo, consumEnergia, consumTransporte):
+def entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco, consumAgua, consumEnergia, consumLixo, consumTransporte):
     comando = ("INSERT INTO BD240225234.projeto"
-           "(nome, data_checagem, agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte, classificacao_agua, classificacao_lixo, classificacao_energia, classificacao_transporte)"
+           "(nome, data_checagem, agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte, classificacao_agua, classificacao_energia, classificacao_lixo, classificacao_transporte)"
            "VALUES"
-           f"('{nome}', '{ano}.{mes}.{dia}', '{litros}', '{kwh}', '{kg}', '{porcentagem}', '{transporte_banco}', '{consumAgua}', '{consumLixo}', '{consumEnergia}', '{consumTransporte}') ")
+           f"('{nome}', '{ano}.{mes}.{dia}', '{litros}', '{kwh}', '{kg}', '{porcentagem}', '{transporte_banco}', '{consumAgua}', '{consumEnergia}', '{consumLixo}', '{consumTransporte}') ")
     
     conexao=obterConxao()
     cursor=conexao.cursor()
@@ -48,7 +56,7 @@ def entradBD(nome, ano, mes, dia, litros, kwh, kg, porcentagem, transporte_banco
 
 # Codigo para chamar entradas da lista de checagem
 def listaDeDados():
-    comando = f"SELECT codigo, nome, DATE_FORMAT(data_checagem,'%d/%m/%Y'), agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte, classificacao_agua, classificacao_lixo, classificacao_energia, classificacao_transporte FROM BD240225234.projeto;"
+    comando = f"SELECT codigo, nome, DATE_FORMAT(data_checagem,'%d/%m/%Y'), agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte, classificacao_agua, classificacao_energia, classificacao_lixo, classificacao_transporte FROM BD240225234.projeto;"
     conexao=obterConxao()
     cursor=conexao.cursor()
     cursor.execute(comando)
@@ -76,8 +84,8 @@ def listar():
             print("RESÍDUOS RECICLADOS(%)......: ", linha[atual][6])
             print("TRANSPORTE..................: ", linha[atual][7])
             print("CONSUMO DE ÁGUA.............: ", linha[atual][8])
-            print("GERAÇÃO LIXO NÃO RECICLÁVEL.: ", linha[atual][9])
-            print("CONSUOM DE ENERGIA ELÉTRICA.: ", linha[atual][10])
+            print("CONSUMO DE ENERGIA ELÉTRICA.: ", linha[atual][9])
+            print("GERAÇÃO LIXO NÃO RECICLÁVEL.: ", linha[atual][10])
             print("USO DE TRANSPORTES..........: ", linha[atual][11])
             atual+=1
 
@@ -89,9 +97,18 @@ def alterarBD(coluna, codigo, novoBD, novoBD2, novoBD3):
         comando = f"UPDATE BD240225234.projeto SET data_checagem = '{novoBD3}.{novoBD2}.{novoBD}' WHERE codigo = '{codigo}';"
     else:
         comando = f"UPDATE BD240225234.projeto SET {coluna} = '{novoBD}' WHERE codigo = '{codigo}';"
+
+    registroatual = f"SELECT codigo, nome, DATE_FORMAT(data_checagem,'%d/%m/%Y'), agua_litros, energia_KWh, residuos_nao_resiclaveis_Kg, residuos_reciclados, transporte, classificacao_agua, classificacao_energia, classificacao_lixo, classificacao_transporte FROM BD240225234.projeto WHERE codigo = '{codigo}' ;"
     conexao=obterConxao()
     cursor=conexao.cursor()
     cursor.execute(comando)
+    cursor.execute(registroatual)
+
+    linha = cursor.fetchall()
+
+    consumAgua, consumEnergia, consumLixo, consumTransporte = ProcessamentoClassificações(linha[0][3], linha[0][4], linha[0][6], linha[0][7])
+    atualizarClassificações = f"UPDATE BD240225234.projeto SET classificacao_agua = '{consumAgua}', classificacao_energia = '{consumEnergia}', classificacao_lixo = '{consumLixo}', classificacao_transporte = '{consumTransporte}' WHERE codigo = '{codigo}';"
+    cursor.execute(atualizarClassificações)
     conexao.commit()
 
 # Codigo para checar se codigo informado esta cadastrado no banco de dados
@@ -244,6 +261,7 @@ def inserir():
             else:
                 if transporte > 6 or transporte < 1:
                     print(f"{nome}, não há correspondência para esse transporte! Tente novamente.")
+                    print()
                 else:
                     transporteBem = False
                     digitoBem = False
@@ -301,8 +319,8 @@ def inserir():
         f"##############        {nome}, aqui está o resultado de suas classificações!         #############\n",\
         "\n",\
         f"  Consumo de água:                        {consumAgua}\n",\
-        f"  Geração de Resíduos Não Recicláveis:    {consumLixo}\n",\
         f"  Consumo de Energia Elétrica:            {consumEnergia}\n",\
+        f"  Geração de Resíduos Não Recicláveis:    {consumLixo}\n",\
         f"  Uso de Transporte:                      {consumTransporte}\n",\
         "")
 
@@ -331,8 +349,80 @@ def inserir():
     else:
         print("Dados cadastrados com sucesso\n")
 
+# Seleciona as médias
+def media():
+    comando = f"SELECT ROUND(AVG(agua_litros), 2) AS MediaAgua, ROUND(AVG(energia_KWh), 2) AS MediaEnergia, ROUND(AVG(residuos_nao_resiclaveis_Kg), 2) AS ResiduosLixo, ROUND(AVG(residuos_reciclados), 2) AS PorcentagemLixoReciclado, ( SELECT transporte FROM BD240225234.projeto GROUP BY transporte ORDER BY COUNT(*) DESC LIMIT 1 ) AS TransporteMaisFrequente FROM BD240225234.projeto;;"
+    conexao=obterConxao()
+    cursor=conexao.cursor()
+    cursor.execute(comando)
 
 
+    linhas = cursor.fetchall()
+    return linhas
+
+# Processando as classificações gerais
+def ProcessamentoClassificações (agua, energia, lixo, transporte):   
+    AltaSustentabilidade = "Alta Sustentabilidade"
+    ModeradaSustentabilidade = "Moderada Sustentabilidade"
+    BaixaSustentabilidade = "Baixa Sustentabilidade"
+
+    if agua < 150:
+        consumAgua = AltaSustentabilidade
+    elif agua > 151 and agua < 201:
+        consumAgua = ModeradaSustentabilidade
+    else:
+        consumAgua = BaixaSustentabilidade
+
+    if energia < 5:
+        consumEnergia = AltaSustentabilidade
+    elif energia > 4 and energia < 11:
+        consumEnergia = ModeradaSustentabilidade
+    else:
+        consumEnergia = BaixaSustentabilidade
+
+    if lixo > 50:
+        consumLixo = AltaSustentabilidade
+    elif lixo > 19 and lixo < 51:
+        consumLixo = ModeradaSustentabilidade
+    else:
+        consumLixo = BaixaSustentabilidade
+
+    if transporte in [1, 2, 3, 5]:
+        consumTransporte = AltaSustentabilidade
+    elif transporte == 4:
+        consumTransporte = BaixaSustentabilidade
+    else:
+        consumTransporte = ModeradaSustentabilidade
+
+    return consumAgua, consumEnergia, consumLixo, consumTransporte
+
+# Lista as médias gerais do BD
+def listarMedias():
+    try:
+        linha=media() #Chamando o sub programa para pega os dados
+    except Error:
+        print("Problema de conexão com o BD!")
+    else:
+        atual=0
+        while atual<len(linha):
+
+            consumAgua, consumEnergia, consumLixo, consumTransporte = ProcessamentoClassificações(linha[atual][0], linha[atual][2], linha[atual][3], linha[atual][4])
+
+            print()
+            print(f"##############        {nome}, aqui está a média de todos os registros!          ###############")
+            print()
+            print("MÉDIA DO CONSUMO DE ÁGUA....: ", linha[atual][0])
+            print("MÉDIA DO CONSUMO DE ENERGIA.: ", linha[atual][1])
+            print("MÉDIA DO CONSUMO DE LIXO....: ", linha[atual][2])
+            print("MÉDIA DA % DE LIXO RECICLADO: ", linha[atual][3])
+            print("TRANSPORTE MAIS UTILIZADO...: ", linha[atual][4])
+            print("CONSUMO DE ÁGUA.............: ", consumAgua)
+            print("CONSUMO DE ENERGIA ELÉTRICA.: ", consumEnergia)
+            print("GERAÇÃO LIXO NÃO RECICLÁVEL.: ", consumLixo)
+            print("USO DE TRANSPORTES..........: ", consumTransporte)
+
+            atual+=1
+        print()
 
 
 print("################        PROGRAMA DE MONITORAMENTO DE SUSTENTABILIDADE PESSOAL     #######################")
@@ -363,12 +453,13 @@ while bancodado:
                 "[2]Ver todos os registros.\n",\
                 "[3]Alterar registro.\n",\
                 "[4]Deletar registro.\n",\
-                "[5]Encerrar programa.")
+                "[5]Visualizar médias gerais.\n",\
+                "[6]Encerrar programa.")
             menu_resposta=int(input(""))
         except ValueError:
             print(f"{nome}, o valor deverá ser um número! Tente novamente.")
         else:
-            if menu_resposta > 5 or menu_resposta < 1:
+            if menu_resposta > 6 or menu_resposta < 1:
                 print(f"{nome}, não há correspondência para essa opção! Tente novamente.")
             else:
                 menubd = False
@@ -385,7 +476,7 @@ while bancodado:
 
 
     if menu_resposta == 3:
-        # Menu para escolher o que deseja mudar no banco de dados
+        
         print()
         cod_alt = int(input("Digite o codigo do registro que você desaja Alterar: "))
         try:
@@ -566,21 +657,26 @@ while bancodado:
                             transporte_bancoAlt = "Carona compartilhada"
 
                         alterarBD("transporte", cod_alt, transporte_bancoAlt, 0, 0)# Chama o sub programa para alterar a informação do banco de dados
-                        bd_alt = False
+                        bd_alt = False# Menu para escolher o que deseja mudar no banco de dados
 
-        
+
 
     if menu_resposta == 4:
         print()
         cod_del = int(input("Digite o codigo do registro que você desaja deletar: "))
-        deletar(cod_del)# Chama o sub programa deletar informações
-        print()
+        deletar(cod_del)
+        print()# Chama o sub programa deletar informações
         
 
 
     if menu_resposta == 5:
-        fechaConexa()# Chama o sub programa para fechar a conexão
-        bancodado = False
+        listarMedias()# Chama o sub programa listar médias
+
+
+
+    if menu_resposta == 6:
+        fechaConexa()
+        bancodado = False# Chama o sub programa para fechar a conexão
         
 print()
 print("######################                         PROGRAMA ENCERRADO                      #######################")
